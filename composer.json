@@ -1,5 +1,5 @@
 {
-    name: "c9s/GrindKit",
+    name: "GrindKit/GrindKit",
     type: "library",
     description: "PHP GrindKit for reading cachegrind compatible files."
     authors: [ "name": "c9s" , "email": "cornelius.howl@gmail.com" ],

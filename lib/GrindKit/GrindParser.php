@@ -80,7 +80,6 @@ class GrindParser {
 				$functions[$function]['subCallInformation'][$calledFunctionName.':'.$lnr]['callCount']++;
 				$functions[$function]['subCallInformation'][$calledFunctionName.':'.$lnr]['summedCallCost'] += $cost;
 				
-				
 			} else if(strpos($line,': ')!==false){
 				// Found header
 				$headers[] = $line;
