@@ -96,7 +96,4 @@ class GrindFile extends SplFileInfo
         return $this->getMeta()->cmd;
     }
 
-
 }
-
-
