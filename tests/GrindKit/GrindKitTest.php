@@ -17,9 +17,14 @@ class GrindKitTest extends PHPUnit_Framework_TestCase
         $this->assertNotEmpty( $firstFile );
 
         $meta = $firstFile->getMeta();
-
         # var_dump( $files ); 
     }
-}
 
+    public function testFile()
+    {
+        $gfile = new GrindKit\GrindFile( 'tests/data/cachegrind.out.4039.1319688314' );
+        $this->assertNotEmpty( $gfile );
+
+    }
+}
 
