@@ -1,0 +1,9 @@
+{
+    name: "c9s/GrindKit",
+    type: "library",
+    description: "PHP GrindKit for reading cachegrind compatible files."
+    authors: [ "name": "c9s" , "email": "cornelius.howl@gmail.com" ],
+    require: { 
+        "php": ">=5.3.0"
+    }
+}
