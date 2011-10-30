@@ -17,7 +17,6 @@ class GrindKitTest extends PHPUnit_Framework_TestCase
         $this->assertNotEmpty( $firstFile );
 
         $meta = $firstFile->getMeta();
-        var_dump( $meta ); 
 
         # var_dump( $files ); 
     }
