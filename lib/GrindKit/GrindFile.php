@@ -11,11 +11,13 @@ class GrindFile extends SplFileInfo
      * Parse meta info from cachegrind file.
      *
      * file meta sample:
+
         version: 1
         creator: xdebug 2.1.2
         cmd: /Users/c9s/git/Work/phifty/webroot/index.php
         part: 1
         positions: line
+
      */
     public function getMeta()
     {
