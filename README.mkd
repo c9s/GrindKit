@@ -20,3 +20,18 @@ PHP GrindKit for reading cachegrind compatible file.
         $meta->positions;
     }
 
+## Required PHP Extensions
+
+* xdebug http://xdebug.org/docs/profiler
+
+## Related Tools
+
+* webgrind
+* ct\_annotate
+* xdebugtoolkit
+* kcachegrind (KDE)
+* WinCacheGrind (windows)
+
+## Reference
+
+* Callgrind file format: http://kcachegrind.sourceforge.net/html/CallgrindFormat.html
