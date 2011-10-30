@@ -1,9 +1,12 @@
 <?php
 
 namespace GrindKit;
+use SplFileInfo;
 
-class GrindFile 
+class GrindFile extends SplFileInfo
 {
+
+
 
 }
 

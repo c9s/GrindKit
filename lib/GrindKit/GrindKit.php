@@ -4,6 +4,7 @@ namespace GrindKit;
 use DirectoryIterator;
 use Exception;
 use SplFileInfo;
+use GrindKit\GrindFile;
 
 class GrindKit 
 {
@@ -13,7 +14,6 @@ class GrindKit
         if( ! extension_loaded('xdebug') ) {
             throw new Exception('xdebug extension is required.');
         }
-
     }
 
 
@@ -23,7 +23,7 @@ class GrindKit
      * @param $directory   cachegrind output dir.
      * @param $prefix      cachegrind file prefix.
      *
-     * @return cachegrind files
+     * @return array  cachegrind files (GrindFile class, which is a SplFileInfo class.)
      */
     function scanDir( $directory = null , $prefix = 'cachegrind.out.' ) 
     {
@@ -42,13 +42,13 @@ class GrindKit
         foreach ($iterator as $fileinfo) {
             if ($fileinfo->isFile()) {
                 if( strpos( $fileinfo->getFilename() , $prefix ) === 0 ) {
-                    $files[] = new SplFileInfo( $fileinfo );
-                    // $files[] = array( 'filepath' => $fileinfo->getFilePath() );
+                    $files[] = new GrindFile( $fileinfo );
                 }
             }
         }
         return $files;
     }
+
 }
 
 
