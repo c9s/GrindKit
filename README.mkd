@@ -1,3 +1,22 @@
 # GrindKit
 
 PHP GrindKit for reading cachegrind compatible file.
+
+
+## Usage
+
+
+    $grind = new GrindKit\GrindKit;
+    $files = $grind->scanDir();  // scan xdebug profile output by default.
+
+    $files // we got GrindKit\GrindFile object array, which is inherited from SplFileInfo.
+    foreach( $files as $file ) {
+        $meta = $file->getMeta();
+
+        $meta->version;  # cache grind file version
+        $meta->creator;  # creator, xdebug 2.1.1... or something
+        $meta->cmd;
+        $meta->part;
+        $meta->positions;
+    }
+

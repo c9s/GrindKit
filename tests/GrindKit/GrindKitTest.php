@@ -12,9 +12,13 @@ class GrindKitTest extends PHPUnit_Framework_TestCase
         $files = $grind->scanDir();
         $this->assertNotEmpty( $files );
 
-        foreach( $files as $file ) {
-            // var_dump( $file->getFilename() ); 
-        }
+        $firstFile = $files[0];
+
+        $this->assertNotEmpty( $firstFile );
+
+        $meta = $firstFile->getMeta();
+        var_dump( $meta ); 
+
         # var_dump( $files ); 
     }
 }

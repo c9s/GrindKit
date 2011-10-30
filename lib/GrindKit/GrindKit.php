@@ -42,7 +42,7 @@ class GrindKit
         foreach ($iterator as $fileinfo) {
             if ($fileinfo->isFile()) {
                 if( strpos( $fileinfo->getFilename() , $prefix ) === 0 ) {
-                    $files[] = new GrindFile( $fileinfo );
+                    $files[] = new GrindFile( $fileinfo->getRealPath() );
                 }
             }
         }
