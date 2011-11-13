@@ -78,14 +78,17 @@ class GrindParser
         }
     }
 
-
-    /* Calcualte function summary data 
+    /* Calcualte Invocation summary for functions 
      *
      * */
-    function calculateFunctionSummary($func)
+    function calculateInvocationSummary($funcdata)
     {
-
-
+        $funcname = $funcdata['function'];
+        if( isset( $this->summary[ $funcname ] ) ) {
+            $s = & $this->summary[ $funcname ];
+        } else {
+            $this->summary[ $funcname ] = $funcdata;
+        }
     }
 
     /* the valgrind parser implementation for version 1 spec
@@ -93,7 +96,8 @@ class GrindParser
      */
     function parse()
     {
-        $this->readFile();
+        if( empty($this->buffer) )
+            $this->readFile();
 		
 		// Read information into memory
         $lines = $this->getBuffer();
@@ -143,7 +147,9 @@ class GrindParser
                     $funcdata['summary_cost'] = (int)$selfCost;
                 }
 
-                $this->functions[ $funcname ] = $lastFunction = $funcdata;
+                $this->functions[] = $lastFunction = $funcdata;
+
+                $this->calculateInvocationSummary( $funcdata );
                 // $info01 = rtrim(fgets($in));
                 // $info02 = rtrim(fgets($in));
             } 
@@ -159,8 +165,10 @@ class GrindParser
                 $line = $this->getLine();
                 $funcname = rtrim(substr($line,4));
                 $funcdata = array(
-                    'function' => $funcname,
-                    'filename' => $filename,
+                    'function'  => $funcname,
+                    'filename'  => $filename,
+                    'is_method' => $this->isMethodCall($funcname),
+                    'is_php'    => $this->isPhpFunction($funcname),
                 );
 
                 // calls attributes?
@@ -176,9 +184,10 @@ class GrindParser
                     list($sourceline,$inclusivecost) = $costs;
                     $funcdata['line'] = (int) $sourceline;
                     $funcdata['self_cost'] = (int) $inclusivecost;
-                    $lastFunction['summary_cost'] += $inclusivecost;
+
+                    $this->calculateInvocationSummary( $funcdata );
                 }
-                $this->functions[ $funcname ] = $funcdata;
+                $this->functions[] = $funcdata;
             } 
             else if(strpos($line,': ')!==false){
 				// Found header
