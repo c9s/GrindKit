@@ -39,7 +39,7 @@ class GrindParser
 
     function getNextLine()
     {
-        return @$this->buffer[ $this->pointer + 1 ];
+        return @$this->buffer[ $this->pointer ];
     }
 
     function advanceLine()
@@ -86,10 +86,16 @@ class GrindParser
         // if the function exists 
         if( isset( $result->summary[ $funcname ] ) ) {
             // calculate here...
-            $result->summary[ $funcname ]['summary_cost'] += (int) $funcdata['self_cost'];
+            $result->summary[ $funcname ]['cost'] += (int) $funcdata['self_cost'];
+
+            if( isset($funcdata['invocation_count'] ) )
+                $result->summary[ $funcname ]['invocation_count'] += (int) $funcdata['invocation_count'];
         } else {
-            $result->summary[ $funcname ] = $funcdata;
-            $result->summary[ $funcname ]['summary_cost'] = (int) $funcdata['self_cost'];
+            $result->summary[ $funcname ] = array();
+            $result->summary[ $funcname ]['cost'] = (int) $funcdata['self_cost'];
+
+            if( isset($funcdata['invocation_count'] ) )
+                $result->summary[ $funcname ]['invocation_count'] = (int) $funcdata['invocation_count'];
         }
     }
 
@@ -171,28 +177,35 @@ class GrindParser
                 // call to function function name "cfn="
                 $line = $this->getLine();
                 $funcname = rtrim(substr($line,4));
+
                 $funcdata = array(
-                    'function'  => $funcname,
-                    'filename'  => $filename,
-                    'is_method' => $this->isMethodCall($funcname),
-                    'is_php'    => $this->isPhpFunction($funcname),
+                    'function'    => $funcname,
+                    'filename'    => $filename,
+                    'is_method'   => $this->isMethodCall($funcname),
+                    'is_php'      => $this->isPhpFunction($funcname),
+                    'called_from' => $lastFunction['function'], // called from "last function (fn) we parsed."
                 );
 
-                // parse calls attributes
                 $next = $this->getNextLine();
-                if( substr($next,0,5) === 'calls=' ) {
+
+                // if calls= is specified.
+                if( substr($next,0,6) === 'calls=' ) {
                     // calls=(Call Count) (Destination position)
-                    list($count,$destline) = explode(' ', substr(rtrim($next),5) );
+                    list($count,$destline) = explode(' ', substr(rtrim($next),6) );
+                    $funcdata['invocation_count'] = (int) $count;
+                    $funcdata['destination'] = (int) $distline;
                     $this->advanceLine();
-                    $costline = rtrim($this->getLine());
+
+                    $next = $this->getNextLine();
+                    $costline = rtrim($next);
 
                     // (Source position) (Inclusive cost of call)
                     $costs = explode(' ',$costline);
                     list($sourceline,$inclusivecost) = $costs;
                     $funcdata['line'] = (int) $sourceline;
                     $funcdata['self_cost'] = (int) $inclusivecost;
-
                     $this->calculateInvocationSummary( $result, $funcdata );
+                    $this->advanceLine();
                 }
                 $result->functions[] = $funcdata;
             } 
