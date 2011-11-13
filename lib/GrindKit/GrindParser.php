@@ -2,23 +2,21 @@
 namespace GrindKit;
 use GrindKit\GrindFile;
 use GrindKit\GrindKit;
+use GrindKit\GrindParserResult;
 use Exception;
+
+
+/* TODO:
+ *
+ * Support: file Id mapping
+ *
+ */
 
 class GrindParser 
 {
     public $pointer;
     public $buffer;
     public $file;
-
-    /* function invocation data , parsed from cachegrind file. */
-    protected $functions = array();
-
-    /* function invocation summary data, which is calculated */
-    protected $summary = array();
-
-    /* cachegrind file headers */
-    protected $headers = array();
-
 
 	const ENTRY_POINT = '{main}';
 
@@ -81,13 +79,17 @@ class GrindParser
     /* Calcualte Invocation summary for functions 
      *
      * */
-    function calculateInvocationSummary($funcdata)
+    function calculateInvocationSummary($result,$funcdata)
     {
         $funcname = $funcdata['function'];
-        if( isset( $this->summary[ $funcname ] ) ) {
-            $s = & $this->summary[ $funcname ];
+
+        // if the function exists 
+        if( isset( $result->summary[ $funcname ] ) ) {
+            // calculate here...
+            $result->summary[ $funcname ]['summary_cost'] += (int) $funcdata['self_cost'];
         } else {
-            $this->summary[ $funcname ] = $funcdata;
+            $result->summary[ $funcname ] = $funcdata;
+            $result->summary[ $funcname ]['summary_cost'] = (int) $funcdata['self_cost'];
         }
     }
 
@@ -98,6 +100,8 @@ class GrindParser
     {
         if( empty($this->buffer) )
             $this->readFile();
+
+        $result = new GrindParserResult;
 		
 		// Read information into memory
         $lines = $this->getBuffer();
@@ -108,6 +112,10 @@ class GrindParser
             $line = rtrim( $line );
 
             if( strlen($line) == 0 )
+                continue;
+
+            /* skip comments */
+            if( strpos($line,'#') === 0 )
                 continue;
 
             // CostPosition := "ob" | "fl" | "fi" | "fe" | "fn"
@@ -144,12 +152,11 @@ class GrindParser
                     list($line,$selfCost) = $costs;
                     $funcdata['line'] = (int)$line;
                     $funcdata['self_cost'] = (int)$selfCost;
-                    $funcdata['summary_cost'] = (int)$selfCost;
                 }
 
-                $this->functions[] = $lastFunction = $funcdata;
+                $result->functions[] = $lastFunction = $funcdata;
 
-                $this->calculateInvocationSummary( $funcdata );
+                $this->calculateInvocationSummary( $result, $funcdata );
                 // $info01 = rtrim(fgets($in));
                 // $info02 = rtrim(fgets($in));
             } 
@@ -171,7 +178,7 @@ class GrindParser
                     'is_php'    => $this->isPhpFunction($funcname),
                 );
 
-                // calls attributes?
+                // parse calls attributes
                 $next = $this->getNextLine();
                 if( substr($next,0,5) === 'calls=' ) {
                     // calls=(Call Count) (Destination position)
@@ -185,20 +192,16 @@ class GrindParser
                     $funcdata['line'] = (int) $sourceline;
                     $funcdata['self_cost'] = (int) $inclusivecost;
 
-                    $this->calculateInvocationSummary( $funcdata );
+                    $this->calculateInvocationSummary( $result, $funcdata );
                 }
-                $this->functions[] = $funcdata;
+                $result->functions[] = $funcdata;
             } 
             else if(strpos($line,': ')!==false){
 				// Found header
-				$this->headers[] = trim($line);
+				$result->headers[] = trim($line);
 			}
 		}
-
-        return array(
-            'functions' => $this->functions,
-            'headers'   => $this->headers,
-        );
+        return $result;
     }
 
 }
