@@ -18,6 +18,8 @@ PHP GrindKit for reading cachegrind compatible file.
         $meta->cmd;
         $meta->part;
         $meta->positions;
+
+        $tree = $file->parse();
     }
 
 ## Required PHP Extensions
