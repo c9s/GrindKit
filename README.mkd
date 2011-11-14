@@ -29,8 +29,18 @@ PHP GrindKit for reading cachegrind compatible file.
         $result->functions;  // function list
         $result->summary;    // summary table
         $result->headers;    // header list
+
+
+        $tree = $result->getExecutionTree();
+        $result->dumpExecutionTree();
     }
 
+
+## ParserResult Methods
+
+#### $result->dumpExecutionTree()
+
+will dump the execution tree
 
 ## Required PHP Extensions
 

@@ -10,6 +10,7 @@
  */
 namespace GrindKit;
 use Exception;
+use GrindKit\Node;
 
 class GrindParserResult 
 {
@@ -23,18 +24,24 @@ class GrindParserResult
     /* cachegrind file headers */
     public $headers = array();
 
-	function addCall( & $func )
+	private $id = 0;
+
+	function addCall( $func )
 	{
-		$this->functions[] = $func;
-		$this->functionMapping[ $func['function'] ] = $func;
-		$this->calculateInvocationSummary( $func );
+		$func['identity'] = $this->id ++;
+		$node = new Node($func);
+		$this->functions[] = $node; // append to function list
+		$this->functionMapping[ $func['function'] ] = $node; // quick mapping
+		$this->calculateInvocationSummary( $node );
+		return $node;
 	}
 
     /* Calcualte Invocation summary for functions 
      * */
-    function calculateInvocationSummary($funcdata)
+    function calculateInvocationSummary($node)
     {
-        $funcname = $funcdata['function'];
+		$funcdata = & $node->data;
+        $funcname = $node->data['function'];
 
         // if the function exists 
         if( isset( $this->summary[ $funcname ] ) ) {
@@ -52,14 +59,25 @@ class GrindParserResult
         }
     }
 
-	function getCall($name)
+	public function getCalledFrom($name)
+	{
+		$list = array();
+		foreach( $this->functions as $func ) {
+			if( isset($func['called_from']) && $func['called_from'] === $name ) {
+				$list[] = $func;
+			}
+		}
+		return $list;
+	}
+
+	public function getCall($name)
 	{
 		if( isset($this->functionMapping[ $name ] ) ) {
 			return $this->functionMapping[ $name ];
 		}
 	}
 
-	function listCalls()
+	function dumpCalls()
 	{
 		foreach( $this->functions as $func ) {
 			if( isset($func['called_from'] ) )
@@ -68,17 +86,43 @@ class GrindParserResult
 		}
 	}
 
-	/* return tree structure result */
-	function getTree()
+	private function dump($node,$level = 0)
 	{
-		$entrypoint = '{main}';
-		$main = $this->getCall($entrypoint);
-		if( ! $main )
-			throw new Exception( 'Entrypoint {{main}} not found.' );
-
-		// get entrypoint function
-		// if( isset( $this->functions )
+		echo str_repeat('  ', $level);
+		printf( "-> %s \n" , $node->getName() );
+		foreach( $node->childs as $child ) {
+			$this->dump( $child, $level + 1);
+		}
 	}
 
+	public function dumpExecutionTree()
+	{
+		$tree = $this->getExecutionTree();
+		$this->dump( $tree , 0 );
+	}
+
+	/* return tree structure result */
+	public function getExecutionTree()
+	{
+		$root = new Node;
+		foreach( $this->functions as $node ) 
+		{
+			# echo $call['identity'] . "\n";
+			# ob_flush();
+			# $this->getSubcalls($node);
+			$root->addChild( $node );
+		}
+		return $root;
+	}
+
+	public function getSubcalls($node)
+	{
+		// get all called from
+		$subcalls = $this->getCalledFrom( $node->getName() );
+		foreach( $subcalls as $call ) { // $call = array
+			$child = new Node($call);
+			$node->addChild( $child );
+		}
+	}
 }
 

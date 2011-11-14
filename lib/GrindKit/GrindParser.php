@@ -138,8 +138,7 @@ class GrindParser
                     $funcdata['self_cost'] = (int)$selfCost;
                 }
 
-                $result->addCall( $funcdata );
-                $lastFunction = $funcdata;
+                $lastFunction = $result->addCall( $funcdata );
 
                 // $info01 = rtrim(fgets($in));
                 // $info02 = rtrim(fgets($in));
@@ -149,7 +148,6 @@ class GrindParser
             {
                 if( ! $lastFunction )
                     throw new Exception("Can not parse call to function: Last function is empty.");
-
                 $filename = rtrim(substr($line,4));
 
                 // call to function function name "cfn="
@@ -161,7 +159,9 @@ class GrindParser
                     'filename'    => $filename,
                     'is_method'   => $this->isMethodCall($funcname),
                     'is_php'      => $this->isPhpFunction($funcname),
-                    'called_from' => $lastFunction['function'], // called from "last function (fn) we parsed."
+
+                    // called from functino
+                    'called_from' => $lastFunction->data['function'], // called from "last function (fn) we parsed."
                 );
 
                 $next = $this->getNextLine();
@@ -180,12 +180,11 @@ class GrindParser
                     // (Source position) (Inclusive cost of call)
                     $costs = explode(' ',$costline);
                     list($sourceline,$inclusivecost) = $costs;
-                    $funcdata['line'] = (int) $sourceline;
+                    $funcdata['line'] = (int) $sourceline;  // call {function} from {line}
                     $funcdata['self_cost'] = (int) $inclusivecost;
-                    $result->addCall( $funcdata );
                     $this->advanceLine();
                 }
-                $result->functions[] = $funcdata;
+                $lastFunction->addChild( $funcdata );
             } 
             else if(strpos($line,': ')!==false){
 				// Found header

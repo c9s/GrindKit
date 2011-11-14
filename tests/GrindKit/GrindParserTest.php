@@ -29,12 +29,13 @@ class GrindParserTest extends PHPUnit_Framework_TestCase
         $this->assertNotEmpty( $result->summary ); 
         $this->assertNotEmpty( $result->functions ); 
 
-        $result->listCalls();
-        ob_flush();
+        # $result->dumpCalls();
+        # ob_flush();
 
-        $tree = $result->getTree();
-        var_dump( $tree ); 
-        ob_flush();
+        $tree = $result->getExecutionTree();
+        $this->assertNotEmpty( $tree ); 
+        # $result->dumpExecutionTree();
+        # ob_flush();
     }
 
 }
