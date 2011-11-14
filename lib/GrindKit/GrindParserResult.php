@@ -30,6 +30,7 @@ class GrindParserResult
     {
         $func['identity'] = $this->id ++;
         $node = new Node($func);
+		// register from 0
         $this->functions[] = $node; // append to function list
         $this->functionMapping[ $func['function'] ] = $node; // quick mapping
         $this->calculateInvocationSummary( $node );
@@ -42,6 +43,7 @@ class GrindParserResult
     {
         $funcdata = & $node->data;
         $funcname = $node->data['function'];
+		return;
 
         // if the function exists 
         if( isset( $this->summary[ $funcname ] ) ) {
@@ -69,6 +71,11 @@ class GrindParserResult
         }
         return $list;
     }
+
+	public function getCallById($id)
+	{
+		return $this->functions[ (int) $id ];
+	}
 
     public function getCall($name)
     {
@@ -124,5 +131,5 @@ class GrindParserResult
             $node->addChild( $child );
         }
     }
-}
 
+}

@@ -18,8 +18,6 @@ class GrindParser
     public $buffer;
     public $file;
 
-	const ENTRY_POINT = '{main}';
-
     function __construct( GrindFile $file ) 
     {
         $this->file = $file;
@@ -122,6 +120,7 @@ class GrindParser
                     list($line,$selfCost,$instructions,$floating) = $costs;
                     $funcdata['line'] = (int) $line;
                     $funcdata['self_cost'] = (int) $selfCost;
+                    $funcdata['inclusive_cost'] = (int) $selfCost;
                     $funcdata['instructions'] = (int) $instructions;
                     $funcdata['floating'] = (int) $floating;
                 }
@@ -130,11 +129,13 @@ class GrindParser
                     list($line,$selfCost,$instructions) = $costs;
                     $funcdata['line'] = (int) $line;
                     $funcdata['self_cost'] = (int) $selfCost;
+                    $funcdata['inclusive_cost'] = (int) $selfCost;
                     $funcdata['instructions'] = (int) $instructions;
                 }
                 elseif( count($costs) == 2 ) {
                     list($line,$selfCost) = $costs;
                     $funcdata['line'] = (int)$line;
+                    $funcdata['inclusive_cost'] = (int) $selfCost;
                     $funcdata['self_cost'] = (int)$selfCost;
                 }
 
@@ -182,6 +183,8 @@ class GrindParser
                     list($sourceline,$inclusivecost) = $costs;
                     $funcdata['line'] = (int) $sourceline;  // call {function} from {line}
                     $funcdata['self_cost'] = (int) $inclusivecost;
+
+                    $lastFunction->data['inclusive_cost'] += (int) $inclusivecost;
                     $this->advanceLine();
                 }
                 $lastFunction->addChild( $funcdata );
