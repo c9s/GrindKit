@@ -6,3 +6,4 @@ TODO
 * design UI component.
 * calculate class costs.
 * calculate summary costs.
+* sort function costs.
