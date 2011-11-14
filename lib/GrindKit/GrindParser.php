@@ -76,28 +76,6 @@ class GrindParser
         }
     }
 
-    /* Calcualte Invocation summary for functions 
-     *
-     * */
-    function calculateInvocationSummary($result,$funcdata)
-    {
-        $funcname = $funcdata['function'];
-
-        // if the function exists 
-        if( isset( $result->summary[ $funcname ] ) ) {
-            // calculate here...
-            $result->summary[ $funcname ]['cost'] += (int) $funcdata['self_cost'];
-
-            if( isset($funcdata['invocation_count'] ) )
-                $result->summary[ $funcname ]['invocation_count'] += (int) $funcdata['invocation_count'];
-        } else {
-            $result->summary[ $funcname ] = array();
-            $result->summary[ $funcname ]['cost'] = (int) $funcdata['self_cost'];
-
-            if( isset($funcdata['invocation_count'] ) )
-                $result->summary[ $funcname ]['invocation_count'] = (int) $funcdata['invocation_count'];
-        }
-    }
 
     /* the valgrind parser implementation for version 1 spec
      *
@@ -160,9 +138,9 @@ class GrindParser
                     $funcdata['self_cost'] = (int)$selfCost;
                 }
 
-                $result->functions[] = $lastFunction = $funcdata;
+                $result->addCall( $funcdata );
+                $lastFunction = $funcdata;
 
-                $this->calculateInvocationSummary( $result, $funcdata );
                 // $info01 = rtrim(fgets($in));
                 // $info02 = rtrim(fgets($in));
             } 
@@ -204,7 +182,7 @@ class GrindParser
                     list($sourceline,$inclusivecost) = $costs;
                     $funcdata['line'] = (int) $sourceline;
                     $funcdata['self_cost'] = (int) $inclusivecost;
-                    $this->calculateInvocationSummary( $result, $funcdata );
+                    $result->addCall( $funcdata );
                     $this->advanceLine();
                 }
                 $result->functions[] = $funcdata;
