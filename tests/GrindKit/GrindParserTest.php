@@ -8,11 +8,6 @@
  * file that was distributed with this source code.
  *
  */
-require_once 'lib/GrindKit/GrindKit.php';
-require_once 'lib/GrindKit/GrindFile.php';
-require_once 'lib/GrindKit/GrindParser.php';
-require_once 'lib/GrindKit/GrindParserResult.php';
-
 use GrindKit\GrindFile;
 use GrindKit\GrindParser;
 
@@ -33,11 +28,6 @@ class GrindParserTest extends PHPUnit_Framework_TestCase
         $this->assertNotEmpty( $result ); 
         $this->assertNotEmpty( $result->summary ); 
         $this->assertNotEmpty( $result->functions ); 
-
-        // var_dump( $result->summary ); 
-        
-        ob_flush();
-
     }
 
 }
