@@ -19,7 +19,16 @@ PHP GrindKit for reading cachegrind compatible file.
         $meta->part;
         $meta->positions;
 
-        $tree = $file->parse();
+
+        $result = $file->parse();   // get parser result.
+
+
+        $parser = new GrindKit\GrindParser( $file );
+        $result = $parser->parse();
+
+        $result->functions;  // function list
+        $result->summary;    // summary table
+        $result->headers;    // header list
     }
 
 ## Required PHP Extensions
