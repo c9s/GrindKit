@@ -9,7 +9,7 @@
  *
  */
 
-require_once 'lib/GrindKit/Autoloader.php';
+require_once 'src/GrindKit/Autoloader.php';
 $loader = new \GrindKit\Autoloader;
 $loader->load();
 

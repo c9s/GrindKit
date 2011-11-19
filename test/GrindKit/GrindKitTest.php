@@ -1,6 +1,6 @@
 <?php
-require_once('lib/GrindKit/GrindKit.php');
-require_once('lib/GrindKit/GrindFile.php');
+require_once('src/GrindKit/GrindKit.php');
+require_once('src/GrindKit/GrindFile.php');
 
 class GrindKitTest extends PHPUnit_Framework_TestCase
 {

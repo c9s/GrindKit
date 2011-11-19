@@ -16,7 +16,7 @@ class GrindParserTest extends PHPUnit_Framework_TestCase
 
     function testParser()
     {
-        $file = new GrindFile( 'tests/data/cachegrind.out.4039.1319688314' );
+        $file = new GrindFile( 'test/data/cachegrind.out.4039.1319688314' );
         $this->assertNotEmpty( $file );
 
         $parser = new GrindParser( $file );
