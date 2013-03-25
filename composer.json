@@ -1,5 +1,5 @@
 {
-    "name": "GrindKit/GrindKit",
+    "name": "corneltek/grindkit",
     "type": "library",
     "description": "PHP GrindKit for reading cachegrind compatible files.",
     "authors": [
